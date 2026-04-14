@@ -5,8 +5,9 @@ import { experienceSchema } from "@/lib/schemas/profile-schema";
 
 const prisma = new PrismaClient();
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session || !session.user) {
@@ -24,7 +25,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const existing = await prisma.experience.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { jobSeekerProfile: true },
     });
 
@@ -33,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const experience = await prisma.experience.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: data.title,
         company: data.company,
@@ -58,8 +59,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session || !session.user) {
@@ -67,7 +69,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     }
 
     const existing = await prisma.experience.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { jobSeekerProfile: true },
     });
 
@@ -76,7 +78,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     }
 
     await prisma.experience.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Experience deleted successfully" });

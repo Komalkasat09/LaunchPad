@@ -4,10 +4,11 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const job = await prisma.job.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         recruiter: { select: { name: true } },
         skills: true,
@@ -25,8 +26,9 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -38,7 +40,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const existing = await prisma.job.findFirst({
-      where: { id: params.id, recruiterId: session.user.id },
+      where: { id, recruiterId: session.user.id },
     });
 
     if (!existing) {
@@ -61,7 +63,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     } = data;
 
     const job = await prisma.job.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         company,
@@ -90,8 +92,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -103,7 +106,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     }
 
     const existing = await prisma.job.findFirst({
-      where: { id: params.id, recruiterId: session.user.id },
+      where: { id, recruiterId: session.user.id },
     });
 
     if (!existing) {
@@ -111,7 +114,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     }
 
     await prisma.job.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Job deleted" });

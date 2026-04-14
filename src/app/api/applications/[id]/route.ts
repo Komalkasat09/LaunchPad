@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -24,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     const application = await prisma.application.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { job: true },
     });
 
@@ -33,7 +34,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     const updated = await prisma.application.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import cheerio from "cheerio";
+import { load } from "cheerio";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -33,7 +33,7 @@ async function scrapeInternships() {
       timeout: 15000,
     });
 
-    const $ = cheerio.load(response.data);
+    const $ = load(response.data);
     const results: typeof fallbackInternships = [];
 
     $(".individual_internship").each((_, element) => {

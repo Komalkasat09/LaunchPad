@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -17,7 +18,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     }
 
     await prisma.job.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Job removed" });

@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 
 const prisma = new PrismaClient();
 
-export async function POST(_: Request, { params }: { params: { jobId: string } }) {
+export async function POST(_: Request, { params }: { params: Promise<{ jobId: string }> }) {
   try {
+    const { jobId } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -20,13 +21,13 @@ export async function POST(_: Request, { params }: { params: { jobId: string } }
       where: {
         userId_jobId: {
           userId: session.user.id,
-          jobId: params.jobId,
+          jobId,
         },
       },
       update: {},
       create: {
         userId: session.user.id,
-        jobId: params.jobId,
+        jobId,
       },
     });
 
@@ -37,8 +38,9 @@ export async function POST(_: Request, { params }: { params: { jobId: string } }
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { jobId: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ jobId: string }> }) {
   try {
+    const { jobId } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -53,7 +55,7 @@ export async function DELETE(_: Request, { params }: { params: { jobId: string }
       where: {
         userId_jobId: {
           userId: session.user.id,
-          jobId: params.jobId,
+          jobId,
         },
       },
     });
