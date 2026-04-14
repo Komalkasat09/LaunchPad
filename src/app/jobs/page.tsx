@@ -36,16 +36,14 @@ export default async function JobsPage({
       ...(query
         ? {
             OR: [
-              { title: { contains: query, mode: "insensitive" } },
-              { company: { contains: query, mode: "insensitive" } },
-              { description: { contains: query, mode: "insensitive" } },
+              { title: { contains: query } },
+              { company: { contains: query } },
+              { description: { contains: query } },
             ],
           }
         : {}),
-      ...(type ? { type: { equals: type, mode: "insensitive" } } : {}),
-      ...(location
-        ? { location: { contains: location, mode: "insensitive" } }
-        : {}),
+      ...(type ? { type: { equals: type } } : {}),
+      ...(location ? { location: { contains: location } } : {}),
       ...(resolvedParams?.remote ? { remote } : {}),
     },
     orderBy: { postedAt: "desc" },
