@@ -6,7 +6,8 @@ import { ApplicationStatusSelect } from "@/components/jobs/application-status-se
 
 const prisma = new PrismaClient();
 
-export default async function JobApplicationsPage({ params }: { params: { id: string } }) {
+export default async function JobApplicationsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -18,7 +19,7 @@ export default async function JobApplicationsPage({ params }: { params: { id: st
   }
 
   const job = await prisma.job.findFirst({
-    where: { id: params.id, recruiterId: session.user.id },
+    where: { id, recruiterId: session.user.id },
   });
 
   if (!job) {
@@ -26,7 +27,7 @@ export default async function JobApplicationsPage({ params }: { params: { id: st
   }
 
   const applications = await prisma.application.findMany({
-    where: { jobId: params.id },
+    where: { jobId: id },
     include: { applicant: { select: { name: true, email: true } } },
     orderBy: { submittedAt: "desc" },
   });
