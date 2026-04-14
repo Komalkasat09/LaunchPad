@@ -22,9 +22,10 @@ function formatSalary(min?: number | null, max?: number | null) {
   return `Up to $${max?.toLocaleString()}`;
 }
 
-export default async function JobDetailPage({ params }: { params: { id: string } }) {
+export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const job = await prisma.job.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       recruiter: { select: { name: true } },
       skills: true,
