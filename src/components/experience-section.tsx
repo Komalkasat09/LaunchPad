@@ -18,14 +18,19 @@ type Experience = {
   id: string;
   title: string;
   company: string;
-  location?: string;
+  location?: string | null;
   startDate: Date;
-  endDate?: Date;
+  endDate?: Date | null;
   isCurrentPosition: boolean;
-  description?: string;
+  description?: string | null;
 };
 
-export function ExperienceSection({ experiences = [], onUpdate }) {
+type ExperienceSectionProps = {
+  experiences?: Experience[];
+  onUpdate: () => void;
+};
+
+export function ExperienceSection({ experiences = [], onUpdate }: ExperienceSectionProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,7 +111,11 @@ export function ExperienceSection({ experiences = [], onUpdate }) {
       reset();
       onUpdate();
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +139,11 @@ export function ExperienceSection({ experiences = [], onUpdate }) {
       setSuccess("Experience deleted successfully!");
       onUpdate();
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 

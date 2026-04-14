@@ -2,7 +2,17 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 
-export function EducationSection({ educations = [] }) {
+type Education = {
+  id: string;
+  institution: string;
+  degree?: string | null;
+};
+
+type EducationSectionProps = {
+  educations?: Education[];
+};
+
+export function EducationSection({ educations = [] }: EducationSectionProps) {
   return (
     <Card>
       <CardContent className="pt-6">

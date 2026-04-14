@@ -26,10 +26,11 @@ const fallbackInternships = [
 
 async function scrapeInternships() {
   try {
-    const response = await axios.get("https://internshala.com/internships", {
+    const response = await axios.get<string>("https://internshala.com/internships", {
       headers: {
         "User-Agent": "Mozilla/5.0",
       },
+      responseType: "text",
       timeout: 15000,
     });
 

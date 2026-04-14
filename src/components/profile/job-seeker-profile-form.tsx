@@ -17,7 +17,42 @@ import { X } from "lucide-react";
 import { ExperienceSection } from "./experience-section";
 import { EducationSection } from "./education-section";
 
-export function JobSeekerProfileForm({ user }) {
+type JobSeekerProfileFormProps = {
+  user?: {
+    id: string;
+    email?: string | null;
+    jobSeekerProfile?: {
+      title?: string | null;
+      bio?: string | null;
+      location?: string | null;
+      contactEmail?: string | null;
+      contactPhone?: string | null;
+      linkedin?: string | null;
+      github?: string | null;
+      twitter?: string | null;
+      website?: string | null;
+      isProfilePublic?: boolean | null;
+      skills?: Array<{ name: string }>;
+      experience?: Array<{
+        id: string;
+        title: string;
+        company: string;
+        location?: string | null;
+        startDate: Date;
+        endDate?: Date | null;
+        current: boolean;
+        description?: string | null;
+      }>;
+      education?: Array<{
+        id: string;
+        institution: string;
+        degree?: string | null;
+      }>;
+    } | null;
+  };
+};
+
+export function JobSeekerProfileForm({ user }: JobSeekerProfileFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -95,7 +130,11 @@ export function JobSeekerProfileForm({ user }) {
       setSuccess("Profile updated successfully!");
       router.refresh();
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -203,14 +242,11 @@ export function JobSeekerProfileForm({ user }) {
           ...experience,
           isCurrentPosition: experience.current,
         }))}
-        userId={user?.id} 
         onUpdate={() => router.refresh()}
       />
 
       <EducationSection 
         educations={user?.jobSeekerProfile?.education || []} 
-        userId={user?.id} 
-        onUpdate={() => router.refresh()}
       />
 
       <Card>
