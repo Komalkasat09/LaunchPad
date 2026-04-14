@@ -5,7 +5,8 @@ import { JobForm } from "@/components/jobs/job-form";
 
 const prisma = new PrismaClient();
 
-export default async function EditJobPage({ params }: { params: { id: string } }) {
+export default async function EditJobPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -17,7 +18,7 @@ export default async function EditJobPage({ params }: { params: { id: string } }
   }
 
   const job = await prisma.job.findFirst({
-    where: { id: params.id, recruiterId: session.user.id },
+    where: { id, recruiterId: session.user.id },
     include: { skills: true },
   });
 
