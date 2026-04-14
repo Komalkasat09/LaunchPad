@@ -13,7 +13,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
-export function UserNav({ user }) {
+type UserNavProps = {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+};
+
+export function UserNav({ user }: UserNavProps) {
   const initials = user?.name
     ? user.name
         .split(" ")
