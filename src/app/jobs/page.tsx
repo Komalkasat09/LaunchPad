@@ -22,12 +22,13 @@ function formatSalary(min?: number | null, max?: number | null) {
 export default async function JobsPage({
   searchParams,
 }: {
-  searchParams?: { q?: string; type?: string; remote?: string; location?: string };
+  searchParams?: Promise<{ q?: string; type?: string; remote?: string; location?: string }>;
 }) {
-  const query = searchParams?.q?.trim();
-  const type = searchParams?.type?.trim();
-  const location = searchParams?.location?.trim();
-  const remote = searchParams?.remote === "true";
+  const resolvedParams = await searchParams;
+  const query = resolvedParams?.q?.trim();
+  const type = resolvedParams?.type?.trim();
+  const location = resolvedParams?.location?.trim();
+  const remote = resolvedParams?.remote === "true";
 
   const jobs = await prisma.job.findMany({
     where: {
@@ -45,7 +46,7 @@ export default async function JobsPage({
       ...(location
         ? { location: { contains: location, mode: "insensitive" } }
         : {}),
-      ...(searchParams?.remote ? { remote } : {}),
+      ...(resolvedParams?.remote ? { remote } : {}),
     },
     orderBy: { postedAt: "desc" },
     include: {
